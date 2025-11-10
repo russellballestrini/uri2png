@@ -1,0 +1,46 @@
+{
+  "name": "uri2png-multi-engine",
+  "version": "1.0.0",
+  "description": "Universal web page screenshot tool with multiple browser engines (Playwright, Puppeteer, Selenium, WebKit, Chrome DevTools)",
+  "main": "index.js",
+  "type": "module",
+  "bin": {
+    "uri2png": "./cli.js"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "demo": "node examples/demo-all-engines.js",
+    "demo:playwright": "node examples/demo-playwright.js",
+    "demo:puppeteer": "node examples/demo-puppeteer.js",
+    "demo:selenium": "node examples/demo-selenium.js",
+    "demo:cdp": "node examples/demo-cdp.js"
+  },
+  "keywords": [
+    "screenshot",
+    "webpage",
+    "playwright",
+    "puppeteer",
+    "selenium",
+    "webkit",
+    "firefox",
+    "chrome",
+    "automation",
+    "headless"
+  ],
+  "author": "Russell Ballestrini",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "playwright": "^1.48.0",
+    "puppeteer": "^23.5.0",
+    "selenium-webdriver": "^4.25.0",
+    "chrome-remote-interface": "^0.33.2",
+    "commander": "^12.1.0"
+  },
+  "devDependencies": {
+    "chromedriver": "^131.0.0",
+    "geckodriver": "^4.5.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
