@@ -2,13 +2,33 @@
 
 **Universal web page screenshot tool supporting multiple browser engines with aspect ratio configuration.**
 
+## 🐍 Python Version (FastAPI)
+
+**New!** A full Python implementation with FastAPI server is available in the `python/` directory.
+
+```bash
+# Install Python version
+cd python
+pip install -e .
+playwright install
+
+# CLI usage
+uri2png capture https://example.com -o screenshot.png
+
+# Start FastAPI server
+uri2png serve --host 0.0.0.0 --port 8080
+```
+
+See [python/README.md](python/README.md) for full Python documentation.
+
 ## 🚀 Features
 
 - **Multiple Browser Engines**: Playwright (Chromium/Firefox/WebKit), Puppeteer, Selenium, Chrome DevTools Protocol
 - **Aspect Ratio Support**: Easy 16:9, 4:3, 21:9, and custom aspect ratio configurations
 - **Cross-Browser**: Chromium, Chrome, Firefox, WebKit, Safari, Edge
 - **Flexible Configuration**: Viewport size, delays, full-page captures, custom user agents
-- **CLI & Library**: Use as command-line tool or Node.js library
+- **CLI & Library**: Use as command-line tool or Node.js/Python library
+- **FastAPI Server**: REST API for screenshot capture (Python)
 - **Native Tools Support**: wkhtmltoimage, webkit2png, CutyCapt wrappers
 - **Comprehensive Makefile**: Streamlined setup and execution
 
