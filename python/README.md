@@ -1,0 +1,155 @@
+# URI2PNG Python - Multi-Engine Web Screenshot Tool
+
+**FastAPI-based web screenshot service supporting multiple browser engines.**
+
+## Features
+
+- **Multiple Browser Engines**: Playwright (Chromium/Firefox/WebKit), Selenium, Native tools
+- **Aspect Ratio Support**: Easy 16:9, 4:3, 21:9, and custom aspect ratio configurations
+- **FastAPI Server**: REST API for screenshot capture
+- **CLI Tool**: Command-line interface for quick captures
+- **Async/Await**: Fully asynchronous for high performance
+- **Library Usage**: Use as Python library in your projects
+
+## Installation
+
+```bash
+# Install package
+pip install uri2png
+
+# Install Playwright browsers
+playwright install
+playwright install-deps
+
+# Optional: Install with Selenium support
+pip install uri2png[selenium]
+```
+
+## Quick Start
+
+### CLI Usage
+
+```bash
+# Basic screenshot with Playwright
+uri2png capture https://example.com -o screenshot.png
+
+# Use specific browser
+uri2png capture https://example.com -e playwright -b firefox -o output.png
+
+# Custom viewport with aspect ratio
+uri2png capture https://example.com -a 16:9 -w 1920 -o output.png
+
+# Full page screenshot with delay
+uri2png capture https://example.com -f -d 2000 -o output.png
+
+# List available engines
+uri2png list
+
+# Start API server
+uri2png serve --host 0.0.0.0 --port 8080
+```
+
+### API Server
+
+```bash
+# Start server
+uri2png serve --port 8080
+
+# Or run directly
+python -m uri2png.server
+```
+
+#### API Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/` | GET | API info |
+| `/health` | GET | Health check |
+| `/engines` | GET | List available engines |
+| `/capture` | POST | Capture screenshot (returns metadata + URL) |
+| `/capture/image` | GET | Capture and return PNG directly |
+| `/screenshots/{filename}` | GET | Download captured screenshot |
+
+#### Example API Usage
+
+```bash
+# Capture and get PNG directly
+curl "http://localhost:8080/capture/image?url=https://example.com&width=1920&height=1080" -o screenshot.png
+
+# Capture with POST (returns metadata)
+curl -X POST http://localhost:8080/capture \
+  -H "Content-Type: application/json" \
+  -d '{"url": "https://example.com", "width": 1920, "height": 1080}'
+```
+
+### Python Library
+
+```python
+import asyncio
+from uri2png import PlaywrightChromium, create_engine
+
+async def main():
+    # Using specific engine class
+    async with PlaywrightChromium(width=1920, height=1080) as engine:
+        result = await engine.capture("https://example.com", "screenshot.png")
+        print(f"Duration: {result.duration}ms")
+
+    # Using factory function
+    engine = create_engine("playwright-firefox", width=1280, aspect_ratio="16:9")
+    async with engine:
+        result = await engine.capture("https://example.com", "output.png")
+
+asyncio.run(main())
+```
+
+## Configuration Options
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `width` | int | 1280 | Viewport width in pixels |
+| `height` | int | 1024 | Viewport height in pixels |
+| `aspect_ratio` | str | None | Aspect ratio (e.g., "16:9", "4:3") |
+| `delay` | int | 0 | Delay after page load (ms) |
+| `timeout` | int | 30000 | Navigation timeout (ms) |
+| `full_page` | bool | False | Capture full scrollable page |
+| `device_scale_factor` | float | 1.0 | Device pixel ratio (1, 2, 3) |
+| `user_agent` | str | None | Custom user agent string |
+| `browser_type` | str | chromium | Browser: chromium, firefox, webkit |
+
+## Available Engines
+
+| Engine | Browser(s) | Description |
+|--------|-----------|-------------|
+| `playwright` | Chromium | Playwright with Chromium (default) |
+| `playwright-chromium` | Chromium | Playwright with Chromium |
+| `playwright-firefox` | Firefox | Playwright with Firefox |
+| `playwright-webkit` | WebKit | Playwright with WebKit |
+| `selenium` | Chrome | Selenium WebDriver |
+| `selenium-chrome` | Chrome | Selenium with Chrome |
+| `selenium-firefox` | Firefox | Selenium with Firefox |
+| `selenium-edge` | Edge | Selenium with Edge |
+| `wkhtmltoimage` | WebKit | Native wkhtmltoimage tool |
+| `cutycapt` | WebKit | Native CutyCapt tool |
+
+## Development
+
+```bash
+# Install with dev dependencies
+pip install -e ".[dev]"
+
+# Run tests
+pytest
+
+# Run linting
+ruff check .
+```
+
+## License
+
+Apache-2.0
+
+## Credits
+
+- [Russell Ballestrini](https://russell.ballestrini.net) - Original author
+- [LinkPeek](https://linkpeek.com) - Web page snapshot service
+- [Playwright](https://playwright.dev/) - Browser automation
