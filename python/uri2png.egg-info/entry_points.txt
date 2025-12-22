@@ -1,0 +1,2 @@
+[console_scripts]
+uri2png = uri2png.cli:main

@@ -1,5 +1,7 @@
 """
 FastAPI server for uri2png screenshot service.
+
+Can be used standalone or integrated into another FastAPI app via the router.
 """
 
 import hashlib
@@ -9,12 +11,16 @@ from io import BytesIO
 from pathlib import Path
 from typing import Optional
 
-from fastapi import FastAPI, HTTPException, Query, Response
+from fastapi import APIRouter, FastAPI, HTTPException, Query, Response
 from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel, HttpUrl
 
 from . import create_engine, get_available_engines
 
+# APIRouter for integration into other apps
+router = APIRouter(prefix="/screenshot", tags=["screenshot"])
+
+# Standalone app (used when running server directly)
 app = FastAPI(
     title="URI2PNG",
     description="Multi-engine web screenshot API",
@@ -57,34 +63,27 @@ class CaptureResponse(BaseModel):
     error: Optional[str] = None
 
 
-@app.get("/")
-async def root():
-    """API root with usage info."""
+@router.get("/")
+async def screenshot_root():
+    """Screenshot API info."""
     return {
-        "name": "URI2PNG",
+        "name": "URI2PNG Screenshot API",
         "version": "2.0.0",
         "endpoints": {
-            "/capture": "POST - Capture screenshot (returns metadata + download URL)",
-            "/capture/image": "GET - Capture and return PNG directly",
-            "/engines": "GET - List available engines",
-            "/health": "GET - Health check",
+            "/screenshot/capture": "POST - Capture screenshot (returns metadata + download URL)",
+            "/screenshot/capture/image": "GET - Capture and return PNG directly",
+            "/screenshot/engines": "GET - List available engines",
         },
     }
 
 
-@app.get("/health")
-async def health():
-    """Health check endpoint."""
-    return {"status": "healthy"}
-
-
-@app.get("/engines")
+@router.get("/engines")
 async def list_engines():
     """List available screenshot engines."""
     return {"engines": get_available_engines()}
 
 
-@app.post("/capture", response_model=CaptureResponse)
+@router.post("/capture", response_model=CaptureResponse)
 async def capture_screenshot(request: CaptureRequest):
     """
     Capture screenshot and return metadata with download URL.
@@ -121,7 +120,7 @@ async def capture_screenshot(request: CaptureRequest):
                 width=result.width,
                 height=result.height,
                 device_scale_factor=result.device_scale_factor,
-                screenshot_url=f"/screenshots/{filename}",
+                screenshot_url=f"/screenshot/files/{filename}",
             )
         else:
             return CaptureResponse(
@@ -139,7 +138,7 @@ async def capture_screenshot(request: CaptureRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.get("/capture/image")
+@router.get("/capture/image")
 async def capture_image(
     url: HttpUrl = Query(..., description="URL to capture"),
     engine: str = Query("playwright", description="Screenshot engine"),
@@ -203,7 +202,7 @@ async def capture_image(
             pass
 
 
-@app.get("/screenshots/{filename}")
+@router.get("/files/{filename}")
 async def get_screenshot(filename: str):
     """Serve captured screenshot."""
     filepath = os.path.join(SCREENSHOT_DIR, filename)
@@ -216,6 +215,31 @@ async def get_screenshot(filename: str):
         media_type="image/png",
         filename=filename,
     )
+
+
+# Include router in standalone app
+app.include_router(router)
+
+
+@app.get("/")
+async def root():
+    """API root with usage info."""
+    return {
+        "name": "URI2PNG",
+        "version": "2.0.0",
+        "endpoints": {
+            "/screenshot/capture": "POST - Capture screenshot (returns metadata + download URL)",
+            "/screenshot/capture/image": "GET - Capture and return PNG directly",
+            "/screenshot/engines": "GET - List available engines",
+            "/health": "GET - Health check",
+        },
+    }
+
+
+@app.get("/health")
+async def health():
+    """Health check endpoint."""
+    return {"status": "healthy"}
 
 
 def run_server(host: str = "0.0.0.0", port: int = 8080):

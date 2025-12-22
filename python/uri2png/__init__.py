@@ -46,7 +46,21 @@ __all__ = [
     # Factory
     "create_engine",
     "get_available_engines",
+    # Router for integration
+    "get_screenshot_router",
 ]
+
+
+def get_screenshot_router():
+    """Get the FastAPI router for screenshot endpoints.
+
+    Use this to integrate uri2png into another FastAPI app:
+
+        from uri2png import get_screenshot_router
+        app.include_router(get_screenshot_router())
+    """
+    from .server import router
+    return router
 
 
 def create_engine(engine_name: str, **options) -> BaseEngine:
