@@ -43,6 +43,9 @@ env/
 # Extension build output
 extensions/dist/
 
+# Next.js
+.next/
+
 # Temporary files
 *.tmp
 *.temp

@@ -1,0 +1,15 @@
+{
+  "name": "uri2png-server",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev -p 8080",
+    "build": "next build",
+    "start": "next start -p 8080"
+  },
+  "dependencies": {
+    "next": "^15.3.0",
+    "playwright": "^1.48.0"
+  }
+}
