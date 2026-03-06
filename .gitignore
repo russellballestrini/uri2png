@@ -37,6 +37,12 @@ coverage/
 dist/
 build/
 
+# Python venv
+env/
+
+# Extension build output
+extensions/dist/
+
 # Temporary files
 *.tmp
 *.temp
